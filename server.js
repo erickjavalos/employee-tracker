@@ -63,7 +63,7 @@ function setEmployee() {
             role_keys.push(val.id)
         })
         db.query(GlobalConstants.GET_EMPLOYEES, function(err, results) {
-            let employee_names = []
+            let employee_names = ["None"]
             let employee_keys = []
             // get employee names and keys
             results.forEach((val) => {
@@ -99,7 +99,7 @@ function setEmployee() {
             .then((response)=>{
                 // find index of response.department
                 let index_role = 0;
-                let index_man = 0;
+                let index_man = -1;
                 
                 for (let i = 0; i < role_names.length; i++)
                 {
@@ -109,7 +109,6 @@ function setEmployee() {
                     }
                     index_role += 1;
                 }
-                console.log(role_names[index_role])
 
                 for (let i =0; i < employee_names.length; i++)
                 {
@@ -120,9 +119,20 @@ function setEmployee() {
                     index_man++;
                 }
 
+                let manager_id = ''
+                if (response.manager === "None")
+                {
+                    manager_id = null;
+                }
+                else 
+                {
+                    manager_id = employee_keys[index_man]
+                }
+
+
                 let role_id = role_keys[index_role]
                 // retreive manager id 
-                let manager_id = employee_keys[index_man]
+                // let manager_id = employee_keys[index_man]
                 // // create query string
                 let queryParam = ` ('${response.first_name}', '${response.last_name}' , ${role_id}, ${manager_id})`
                 // console.log(GlobalConstants.INSERT_EMPLOYEE + queryParam)
