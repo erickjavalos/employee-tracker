@@ -149,8 +149,41 @@ function setEmployee() {
 
 // update an employee
 function updateEmployee() {
-    console.log('Updating Employee')
-    start()
+    db.query(GlobalConstants.GET_EMPLOYEES, function (err, results) {
+        // maps employee to id
+        const employees = results.map(e => ({ name: e.first_name + " " + e.last_name, value: e.id }));
+        // query the roles
+        db.query(GlobalConstants.GET_ROLES, function (err, results) {
+            const roles = results.map(role => ({ name: role.title, value: role.id }));
+           
+             // prompt questions
+            const questions = [
+                {
+                    name: 'employee',
+                    type: "list",
+                    message: "Which employee's role do you want to update?",
+                    choices: employees,
+                },
+
+                {
+                    name: 'role',
+                    type: "list",
+                    message: "Which employee's role do you want to update?",
+                    choices: roles,
+                },
+            ]
+            // prompt question
+            inquirer.prompt(questions)
+            .then((response)=>{
+                db.query(`UPDATE employees SET role_id = '${response.role}' WHERE id = ${response.employee};`, function (err, results) {
+                    console.log("Updated employee role in employees db")
+                    start()
+                })      
+            })
+
+        })
+       
+    })
 }
 
 // add new role
